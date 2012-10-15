@@ -3,7 +3,7 @@
      Packages for doing a wireless site survey using ROS
   </description>
   <author>Maintained by Austin Hendrix</author>
-  <license>BSD</license>  
+  <license>GPL</license>  
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/site_survey</url>
   <depend stack="ros" />

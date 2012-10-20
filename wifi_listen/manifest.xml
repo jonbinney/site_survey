@@ -1,0 +1,15 @@
+<package>
+  <description brief="wifi_listen">
+
+     wifi_listen
+
+  </description>
+  <author>Austin Hendrix</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/wifi_listen</url>
+  <depend package="roscpp"/>
+
+</package>
+
+

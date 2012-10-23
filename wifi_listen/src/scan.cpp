@@ -1,26 +1,20 @@
 #include <pcap.h>
+
 #include <stdio.h>
 #include <ros/ros.h>
 #include <string>
 
 using namespace std;
 
+void radiotap_parse(const u_char * data) {
+
+}
+
 int main(int argc, char ** argv) {
   char errstr[PCAP_ERRBUF_SIZE];
   int ret = 0;
 
-  // List interfaces
-  /*
-  pcap_if_t *interfaces = NULL;
-  int ret = pcap_findalldevs(&interfaces, errstr);
-
-  pcap_if_t * cur_if = interfaces;
-  while( cur_if ) {
-    printf("%s\n", cur_if->name);
-    cur_if = cur_if->next;
-  }
-  */
-
+  // ROS nodehandle init
   ros::init(argc, argv, "wifi_scan");
   ros::NodeHandle nh("~");
 

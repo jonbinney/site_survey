@@ -1,0 +1,45 @@
+Thoughts on wireless data capture:
+
+What data can we get?
+ - Signal strength by device
+ - Device to SSID mapping
+ - Data rate(s) by device
+ - Channel utilization
+ - Encryption type
+ - Location
+
+What might we get?
+ - Distinguish AP vs client vs ad-hoc
+ - CRC error rate (probably hardware dependant)
+ - Advertised data rates by AP
+
+What is still needed?
+ - 802.11 frame parser
+
+How do we output/display all of this data?
+ROS:
+Visually (graphs):
+ - Utilization vs time (single channel)
+ - Utilization by device (single channel)
+ - Data rate pie chart (single channel or all channels)
+ - Channel/bandwidth utilization by SSID (w/encryption)
+ - AP strength (single channel)
+ - Misbehaving devices: low data rate, high utilization, high CRC rate
+ - CRC rate by channel
+Heat maps:
+ - Min/Max/Average data rate heat maps
+ - Channel crowding heat map
+ - Signal strength heat map (single channel)
+ - Overlap heat map (how many APs on a channel) (single channel or all channels)
+ - Utilization heat map
+ - SSID coverage/strength maps
+ - CRC error rate mapes
+Other visualizations:
+ - Access point location estimates
+
+Notes:
+ - Utilization should take trasmitted data size and transmission rate into
+   account.
+ - Getting good CRC data is probably dependant on having capture hardware that
+   actually reports CRC errors. This will probably require some experimentation
+   and comparison with commercial solutions

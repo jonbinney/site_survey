@@ -47,94 +47,96 @@ int radiotap_field_sz(int id) {
   }
 }
 
-void print_radiotap_field(int id, const u_char * data) {
-  uint8_t u8_a;
-  uint16_t u16_a;
+union radiotap_cast {
+  uint8_t u8[16];
+  int8_t s8[16];
+  uint16_t u16[8];
+  uint32_t u32[4];
+  uint64_t u64[2];
+};
+
+void print_radiotap_field(int id, const u_char * raw_data) {
+  radiotap_cast data = *((radiotap_cast*)raw_data);
   switch(id) {
     case 0:
       // TSFT
-      u16_a = *((uint16_t*)data);
-      ROS_INFO("Received at timestamp %ld", u16_a);
+      ROS_INFO("Received at timestamp %ld", data.u16[0]);
       break;
     case 1:
       // Flags
-      u8_a = *((uint8_t*)data);
-      ROS_INFO("Frame flags %X", u8_a);
-      if( u8_a & 0x1 ) {
-        ROS_INFO("Frame sent/received during CFP");
-      }
-      if( u8_a & 0x2 ) {
-        ROS_INFO("Frame had short preamble");
-      }
-      if( u8_a & 0x4 ) {
-        ROS_INFO("Frame had WEP encryption");
-      }
-      if( u8_a & 0x8 ) {
-        ROS_INFO("Frame was fragmented");
-      }
-      if( u8_a & 0x10 ) {
-        ROS_INFO("Frame includes FCS");
-      }
-      if( u8_a & 0x20 ) {
-        ROS_INFO("Frame has padding");
-      }
-      if( u8_a & 0x40 ) {
-        ROS_INFO("Frame failed FCS check");
+      if( data.u8[0] ) {
+        ROS_INFO("Frame flags %X", data.u8[0]);
+        if( data.u8[0] & 0x01 ) { ROS_INFO("Frame sent/received during CFP"); }
+        if( data.u8[0] & 0x02 ) { ROS_INFO("Frame had short preamble"); }
+        if( data.u8[0] & 0x04 ) { ROS_INFO("Frame had WEP encryption"); }
+        if( data.u8[0] & 0x08 ) { ROS_INFO("Frame was fragmented"); }
+        if( data.u8[0] & 0x10 ) { ROS_INFO("Frame includes FCS"); }
+        if( data.u8[0] & 0x20 ) { ROS_INFO("Frame has padding"); }
+        if( data.u8[0] & 0x40 ) { ROS_INFO("Frame failed FCS check"); }
       }
       break;
     case 2:
       // Rate ( x 500kbps)
+      ROS_INFO("Receive rate %d kbps", 500 * data.u8[0]);
       break;
     case 3:
-      // Channel
+      // Frequency
+      ROS_INFO("Frequency %d MHz (flags %X)", data.u16[0], data.u16[1]);
       break;
     case 4:
-      // FHSS
+      // FHSS (TODO)
       break;
     case 5:
       // Antenna signal
+      ROS_INFO("Antenna signal %d dBm", data.s8[0]);
       break;
     case 6:
-      // Antenna noise
+      // Antenna noise (TODO)
       break;
     case 7:
-      // Lock quality
+      // Lock quality (TODO)
       break;
     case 8:
-      // TX Attenuation
+      // TX Attenuation (TODO)
       break;
     case 9:
-      // dB TX Attenuation
+      // dB TX Attenuation (TODO)
       break;
     case 10:
-      // dBm TX power
+      // dBm TX power (TODO)
       break;
     case 11:
       // Antenna index
+      ROS_INFO("Antenna %d", data.u8[0]);
       break;
     case 12:
-      // dB antenna signal
+      // dB antenna signal (TODO)
       break;
     case 13:
-      // dB antenna noise
+      // dB antenna noise (TODO)
       break;
     case 14:
       // RX flags
+      if( data.u16[0] ) {
+        ROS_INFO("RX Flags %X", data.u16[0]);
+        if( data.u16[0] &  0x0002 ) { ROS_INFO("PLCP CRC check failed"); }
+        if( data.u16[0] & ~0x0002 ) { ROS_INFO("Unrecognized RX flags"); }
+      }
       break;
     case 19:
-      // MCS
+      // MCS (TODO)
       break;
     case 20:
-      // A-MPDU status
+      // A-MPDU status (TODO)
       break;
     case 21:
-      // VHT
+      // VHT (TODO)
       break;
     case 29:
-      // radiotap namespace
+      // radiotap namespace (TODO)
       break;
     case 30:
-      // Vendor namespace
+      // Vendor namespace (TODO)
       break;
     default:
       ROS_INFO("Got unknown radiotap field %d", id);
@@ -153,14 +155,14 @@ void radiotap_parse(const u_char * raw_data, int len) {
   const u_char * header_data = raw_data + sizeof(ieee80211_radiotap_header);
   // pointer to packet data
   const u_char * data = raw_data + header->it_len;
-  ROS_INFO("Radiotap header is %d bytes long (paylod %ld)", header->it_len,
-      header->it_len - sizeof(ieee80211_radiotap_header));
-  ROS_INFO("Radiotap header flags %X", header->it_present);
+  //ROS_INFO("Radiotap header is %d bytes long (paylod %ld)", header->it_len,
+  //    header->it_len - sizeof(ieee80211_radiotap_header));
+  //ROS_INFO("Radiotap header flags %X", header->it_present);
 
   for( int i=0; i < 32; ++i ) {
     int j = 1 << i;
     if( j & header->it_present ) {
-      ROS_INFO("Field %d present in radiotap header", i);
+      //ROS_INFO("Field %d present in radiotap header", i);
       int sz = radiotap_field_sz(i);
       if( header_data + sz <= data ) {
         print_radiotap_field(i, header_data);
@@ -173,9 +175,11 @@ void radiotap_parse(const u_char * raw_data, int len) {
 
   if( header_data < data ) {
     ROS_WARN("Header field size underflow");
-  }
-  if( header_data > data ) {
+  } else if( header_data > data ) {
     ROS_WARN("Header field size overflow");
+  } else {
+    // radiotap header parsed properly. parse 802.11 frame header
+
   }
 }
 

@@ -179,7 +179,13 @@ void radiotap_parse(const u_char * raw_data, int len) {
     ROS_WARN("Header field size overflow");
   } else {
     // radiotap header parsed properly. parse 802.11 frame header
-
+    int frame_len = len - header->it_len;
+    char * outbuf = (char*)malloc(2*frame_len + 1);
+    for( int i=0; i < frame_len; ++i ) {
+      sprintf(outbuf + (2*i), "%02X", data[i]);
+    }
+    ROS_INFO("802.11 Frame: %s", outbuf);
+    free(outbuf);
   }
 }
 
@@ -324,7 +330,7 @@ int main(int argc, char ** argv) {
       radiotap_parse(data, header->caplen);
     }
     if( ret < 0 ) {
-//      ROS_WARN("Error when fetching incoming packet %d", ret);
+      ROS_WARN("Error when fetching incoming packet %d", ret);
     }
     ros::spinOnce();
   }

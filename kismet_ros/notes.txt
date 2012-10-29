@@ -1,0 +1,14 @@
+Kismet protocols:
+*KISMET: 0.0.0 1351475047 Kismet_2009 pcapdump,netxml,nettxt,gpsxml,alert 1000 
+*PROTOCOLS: KISMET,ERROR,ACK,PROTOCOLS,CAPABILITY,TERMINATE,TIME,PACKET,STATUS,PLUGIN,SOURCE,ALERT,COMMON,TRACKINFO,WEPKEY,STRING,GPS,BSSID,SSID,CLIENT,BSSIDSRC,CLISRC,NETTAG,CLITAG,REMOVE,CHANNEL,INFO,BATTERY,CRITFAIL
+*TIME: 1351478332
+
+*CAPABILITY: KISMET version,starttime,servername,dumpfiles,uid
+*CAPABILITY: ERROR cmdid,text
+*CAPABILITY: PACKET type,subtype,timesec,encrypted,weak,beaconrate,sourcemac,destmac,bssid,ssid,prototype,sourceip,destip,sourceport,destport,nbtype,nbsource,sourcename
+*CAPABILITY: STATUS text,flags
+*CAPABILITY: PLUGIN filename,name,version,description,unloadable,root
+*CAPABILITY: SOURCE interface,type,username,channel,uuid,packets,hop,velocity,dwell,hop_time_sec,hop_time_usec,channellist,error,warning
+*CAPABILITY: ALERT sec,usec,header,bssid,source,dest,other,channel,text
+*CAPABILITY: COMMON phytype,macaddr,firsttime,lasttime,packets,llcpackets,errorpackets,datapackets,cryptpackets,datasize,newpackets,channel,frequency,freqmhz,gpsfixed,minlat,minlon,minalt,minspd,maxlat,maxlon,maxalt,maxspd,signaldbm,noisedbm,minsignaldbm,minnoisedbm,signalrssi,noiserssi,minsignalrssi,minnoiserssi,maxsignalrssi,maxnoiserssi,bestlat,bestlon,bestalt,agglat,agglon,aggalt,aggpoints
+

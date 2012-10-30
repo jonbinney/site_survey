@@ -1,3 +1,10 @@
+Project goals:
+* Automate data capture and analysis for wireless site surveys
+* Desired final outputs:
+ * Per-channel heat map to analyze interference (different color per BSSID?)
+ * Per-band heat map to analyze coverage and look for gaps
+ * Bandwidth/active test heat map to analyze dead spots
+
 Notes on possible ways to do a WiFi site-survey with ROS:
 
 1. Write a fully custom packet-capture and parsing engine that interfaces to ROS

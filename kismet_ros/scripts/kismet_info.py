@@ -48,6 +48,10 @@ class KismetClient(threading.Thread):
     if name in self._callbacks:
       self._callbacks[name].append(callback)
 
+  def subscribe(self, name, callback):
+    self.add_callback(name, callback)
+    self.enable(name)
+
   def prot_cb(self, parts):
     # Add protocol
     parts = parts['protocols'].split(',')
@@ -155,16 +159,22 @@ def bssid_cb(parts):
 def ssid_cb(parts):
   print "Got SSID %s MAC %s"%(parts['ssid'], parts['mac'])
 
+def source_cb(parts):
+  print parts
+
 def main():
 
   client = KismetClient()
   rospy.init_node('kismet_ros')
   
-#  client.add_callback('BSSID', bssid_cb)
-#  client.enable('BSSID')
+# BSSID detections (aggregated)
+#  client.subscribe('BSSID', bssid_cb)
 
-  client.add_callback('SSID', ssid_cb)
-  client.enable('SSID')
+# SSID detections (aggregated)
+  client.subscribe('SSID', ssid_cb)
+
+# Capture sources
+#  client.subscribe('SOURCE', source_cb)
 
   #client.enable('CLIENT')
 

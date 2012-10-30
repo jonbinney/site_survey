@@ -60,7 +60,7 @@ void print_radiotap_field(int id, const u_char * raw_data) {
   switch(id) {
     case 0:
       // TSFT
-      ROS_INFO("Received at timestamp %ld", data.u16[0]);
+      //ROS_INFO("Received at timestamp %ld", data.u16[0]);
       break;
     case 1:
       // Flags
@@ -77,18 +77,18 @@ void print_radiotap_field(int id, const u_char * raw_data) {
       break;
     case 2:
       // Rate ( x 500kbps)
-      ROS_INFO("Receive rate %d kbps", 500 * data.u8[0]);
+      //ROS_INFO("Receive rate %d kbps", 500 * data.u8[0]);
       break;
     case 3:
       // Frequency
-      ROS_INFO("Frequency %d MHz (flags %X)", data.u16[0], data.u16[1]);
+      //ROS_INFO("Frequency %d MHz (flags %X)", data.u16[0], data.u16[1]);
       break;
     case 4:
       // FHSS (TODO)
       break;
     case 5:
       // Antenna signal
-      ROS_INFO("Antenna signal %d dBm", data.s8[0]);
+      //ROS_INFO("Antenna signal %d dBm", data.s8[0]);
       break;
     case 6:
       // Antenna noise (TODO)
@@ -107,7 +107,7 @@ void print_radiotap_field(int id, const u_char * raw_data) {
       break;
     case 11:
       // Antenna index
-      ROS_INFO("Antenna %d", data.u8[0]);
+      //ROS_INFO("Antenna %d", data.u8[0]);
       break;
     case 12:
       // dB antenna signal (TODO)
@@ -118,9 +118,10 @@ void print_radiotap_field(int id, const u_char * raw_data) {
     case 14:
       // RX flags
       if( data.u16[0] ) {
-        ROS_INFO("RX Flags %X", data.u16[0]);
+        if( data.u16[0] &  0x0001 ) { ROS_INFO("FCS failed"); }
         if( data.u16[0] &  0x0002 ) { ROS_INFO("PLCP CRC check failed"); }
-        if( data.u16[0] & ~0x0002 ) { ROS_INFO("Unrecognized RX flags"); }
+        if( data.u16[0] & ~0x0003 ) { ROS_INFO("Unrecognized RX flags: %X",
+            data.u16[0] & ~0x0003); }
       }
       break;
     case 19:
@@ -148,7 +149,8 @@ void radiotap_parse(const u_char * raw_data, int len) {
   ieee80211_radiotap_header * header = (ieee80211_radiotap_header*)raw_data;
 
   if( header->it_version != 0 ) {
-    ROS_WARN("New version of radiotap header detected. Aborting");
+    ROS_WARN("New version of radiotap header detected (%d). Aborting",
+        header->it_version);
     return;
   }
   // pointer to header data
@@ -174,10 +176,11 @@ void radiotap_parse(const u_char * raw_data, int len) {
   }
 
   if( header_data < data ) {
-    ROS_WARN("Header field size underflow");
+    ROS_WARN("Header field size underflow by %ld", data - header_data);
   } else if( header_data > data ) {
-    ROS_WARN("Header field size overflow");
+    ROS_WARN("Header field size overflow by %ld", header_data - data);
   } else {
+    /*
     // radiotap header parsed properly. parse 802.11 frame header
     int frame_len = len - header->it_len;
     char * outbuf = (char*)malloc(2*frame_len + 1);
@@ -186,6 +189,7 @@ void radiotap_parse(const u_char * raw_data, int len) {
     }
     ROS_INFO("802.11 Frame: %s", outbuf);
     free(outbuf);
+    */
   }
 }
 
@@ -325,8 +329,10 @@ int main(int argc, char ** argv) {
     //   the next call to pcap_next_ex"
     ret = pcap_next_ex(cap, &header, &data);
     if( ret > 0 ) {
+      /*
       ROS_INFO("Captured packet with length %d(%d)", header->len, 
           header->caplen);
+          */
       radiotap_parse(data, header->caplen);
     }
     if( ret < 0 ) {

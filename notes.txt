@@ -1,0 +1,24 @@
+Notes on possible ways to do a WiFi site-survey with ROS:
+
+1. Write a fully custom packet-capture and parsing engine that interfaces to ROS
+2. Write a kismet_server client that interfaces to ROS
+3. Write a kismet_drone client that interfaces to ROS
+4. Write a kismet plugin that brings ROS location data into Kismet
+
+Thoughts on each approach:
+1. Writing a fully-custom packet capture engine is the most powerful approach, but it's also the greatest amount of work and requires a deep understanding of linux, packet capture, radiotap and 802.11 headers to decode and understand the data coming off of the wire
+
+2. Writing a kismet_server client is probably the easiest, but it isn't immediately obvious if the interface gives us access to transient data or not. If kismet is aggregating data over time, that makes it difficult to differentiate data while the robot is in motion
+
+3. Writing a kismet_drone client gives us access to raw radiotap headers and 802.11 frames. This is slightly easier than (1) becuase it takes care of device setup and hopping, but still requires us to write radiotap and 802.11 packet decoders, and interpret those packets.
+
+4. If we can bring good location data into Kismet, we may be able to use the built-in mapping tools to build a heat map. This relies on:
+ * Writing a Kismet plugin to translate map locations to super-high-res GPS
+ * The Kismet map-generation code actually working
+ * The Kismet GPS pipeline and map-generation being able to preserve the reesolution of our GPS data
+ * The Kismet map-generation being able to generate the types of maps we're looking for
+
+
+1-3 require us to design a message/capture format that makes sense for ROS and requires us to write all of the map-generation code by hand.
+
+4 saves us from having to choose intermediate data formats, but leaves us with only the map types that Kismet might be able to generate, and whatever other limitations may be lurking in Kismet's mapping engine.

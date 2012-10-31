@@ -57,20 +57,18 @@ class KismetClient(threading.Thread):
     parts = parts['protocols'].split(',')
     for p in parts:
       if not p in self._callbacks:
-        print "Adding callback array for protocol %s"%p
         self._callbacks[p] = []
       if not p in self._protocol_fields:
-        print "Requesting capabilities for %s"%p
         self.send_command('CAPABILITY %s'%p)
 
   def cap_cb(self, parts):
     fields = parts['capabilities'].split(',')
+    if parts['protocol'] in self._protocol_fields:
+      print "Already had capabilities for %s; replacing"%(parts['protocol'])
     self._protocol_fields[parts['protocol']] = fields
-    print "Got capabilities for %s"%(parts['protocol'])
 
   def time_cb(self, parts):
     self._last_time = parts['timesec']
-    #print 'Got server timestamp %s'%(parts[1])
 
   def err_cb(self, parts):
     print "Got Error %s for message %s"%(parts['text'], parts['cmdid'])
@@ -171,7 +169,7 @@ def main():
 #  client.subscribe('BSSID', bssid_cb)
 
 # SSID detections (aggregated)
-  client.subscribe('SSID', ssid_cb)
+#  client.subscribe('SSID', ssid_cb)
 
 # Capture sources
 #  client.subscribe('SOURCE', source_cb)

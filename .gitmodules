@@ -1,0 +1,3 @@
+[submodule "kismet"]
+	path = kismet
+	url = git@github.com:ahendrix/kismet.git

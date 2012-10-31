@@ -9,6 +9,7 @@ Notes on possible ways to do a WiFi site-survey with ROS:
 
 1. Write a fully custom packet-capture and parsing engine that interfaces to ROS
 2. Write a kismet_server client that interfaces to ROS
+2.1. Patch kismet to support the *PACKET protocol again and use that
 3. Write a kismet_drone client that interfaces to ROS
 4. Write a kismet plugin that brings ROS location data into Kismet
 

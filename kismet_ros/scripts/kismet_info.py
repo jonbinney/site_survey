@@ -28,7 +28,7 @@ class KismetClient(threading.Thread):
       'ACK': ['cmdid', 'text']
     }
 
-    self._callbacks['KISMET'] = []
+    self._callbacks['KISMET'] = [self.kismet_cb]
     self._callbacks['TIME'] = [self.time_cb]
     self._callbacks['PROTOCOLS'] = [self.prot_cb]
     self._callbacks['ERROR'] = [self.err_cb]
@@ -51,6 +51,10 @@ class KismetClient(threading.Thread):
   def subscribe(self, name, callback):
     self.add_callback(name, callback)
     self.enable(name)
+
+  def kismet_cb(self, fields):
+    print "Connected to kismet version %s running as %s on %s"%(
+        fields['version'], fields['uid'], fields['servername'])
 
   def prot_cb(self, parts):
     # Add protocol
@@ -157,8 +161,13 @@ def bssid_cb(parts):
 def ssid_cb(parts):
   print "Got SSID %s MAC %s"%(parts['ssid'], parts['mac'])
 
-def source_cb(parts):
+def generic_cb(parts):
   print parts
+
+def packet_cb(fields):
+#*CAPABILITY: PACKET type,encryption,channel,datarate,ssid,bssid,sourcmac,destmac,signal_dbm,signal_rssi,noise_dbm,noise_rssi
+  print "From %s to %s on channel %s"%(fields['sourcmac'], fields['destmac'],
+      fields['channel'])
 
 def main():
 
@@ -172,7 +181,10 @@ def main():
 #  client.subscribe('SSID', ssid_cb)
 
 # Capture sources
-#  client.subscribe('SOURCE', source_cb)
+#  client.subscribe('SOURCE', generic_cb)
+
+# Packets
+  client.subscribe('PACKET', packet_cb)
 
   #client.enable('CLIENT')
 

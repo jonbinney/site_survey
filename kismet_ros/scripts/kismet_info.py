@@ -169,6 +169,10 @@ def packet_cb(fields):
   print "From %s to %s on channel %s"%(fields['sourcmac'], fields['destmac'],
       fields['channel'])
 
+def channel_cb(fields):
+  if int(fields['packetsdelta']) > 0:
+    print "Channel %s got %s packets"%(fields['channel'], fields['packetsdelta'])
+
 def main():
 
   client = KismetClient()
@@ -185,6 +189,9 @@ def main():
 
 # Packets
   client.subscribe('PACKET', packet_cb)
+
+# Channel
+  client.subscribe('CHANNEL', channel_cb)
 
   #client.enable('CLIENT')
 

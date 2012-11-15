@@ -213,24 +213,9 @@ def main():
 
   client = KismetClient()
   rospy.init_node('kismet_ros')
-  
-# BSSID detections (aggregated)
-#  client.subscribe('BSSID', bssid_cb)
 
-# SSID detections (aggregated)
-#  client.subscribe('SSID', ssid_cb)
-
-# Capture sources
-#  client.subscribe('SOURCE', generic_cb)
-
-# Packets
-  client.subscribe('PACKET', packet_cb)
-#  analyzer = PacketAnalyzer(client)
-
-# Channel
-#  client.subscribe('CHANNEL', channel_cb)
-
-  #client.enable('CLIENT')
+  # Packets
+  analyzer = PacketAnalyzer(client)
 
   rospy.spin()
 

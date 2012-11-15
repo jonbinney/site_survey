@@ -1,0 +1,14 @@
+<package>
+  <description brief="wifi_msgs">
+
+     wifi_msgs
+
+  </description>
+  <author>Austin Hendrix</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/wifi_msgs</url>
+
+</package>
+
+

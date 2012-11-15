@@ -154,16 +154,6 @@ class KismetClient(threading.Thread):
   def stop(self):
     self._done = True
 
-def bssid_cb(parts):
-  print "Got BSSID %s channel %s retries %s"%(parts['bssid'], 
-      parts['channel'],
-      parts['retries'])
-
-def ssid_cb(parts):
-  print "Got SSID %s MAC %s"%(parts['ssid'], parts['mac'])
-
-def generic_cb(parts):
-  print parts
 
 def packet_cb(fields):
 #*CAPABILITY: PACKET type,encryption,channel,datarate,ssid,bssid,sourcmac,destmac,signal_dbm,signal_rssi,noise_dbm,noise_rssi
@@ -179,58 +169,12 @@ def packet_cb(fields):
       print "Packet to %s with signal %s on channel %s"%(fields['destmac'],
           fields['signal_dbm'], fields['channel'])
 
-def channel_cb(fields):
-  print "Channel %s got %s packets"%(fields['channel'], fields['packetsdelta'])
-
-class PacketAnalyzer:
-  def __init__(self, client):
-    self.channel = 0
-    self.ap_strength = {}
-    client.subscribe('PACKET', self.packet_cb)
-
-  def packet_cb(self, fields):
-    if fields['channel'] != self.channel:
-      # TODO: print AP strength
-      for bssid in self.ap_strength:
-        print "BSSID %s strength %f (%f) on channel %s"%(bssid, 
-            numpy.mean(self.ap_strength[bssid]),
-            numpy.std(self.ap_strength[bssid]),
-            self.channel)
-      self.channel = fields['channel']
-      self.ap_strength = {}
-    if fields['sourcmac'] != '00:00:00:00:00:00':
-      if fields['bssid'] == fields['sourcmac']:
-        #print "Got packet from AP %s(%s) with signal strength %s on channel %s"
-        #    %(fields['ssid'], fields['bssid'], fields['signal_dbm'],
-        #    fields['channel'])
-        bssid = fields['bssid']
-        if not bssid in self.ap_strength:
-          self.ap_strength[bssid] = []
-        self.ap_strength[bssid].append(int(fields['signal_dbm']))
-
 
 def main():
-
   client = KismetClient()
-  rospy.init_node('kismet_ros')
+  rospy.init_node('kismet_screamers')
   
-# BSSID detections (aggregated)
-#  client.subscribe('BSSID', bssid_cb)
-
-# SSID detections (aggregated)
-#  client.subscribe('SSID', ssid_cb)
-
-# Capture sources
-#  client.subscribe('SOURCE', generic_cb)
-
-# Packets
   client.subscribe('PACKET', packet_cb)
-#  analyzer = PacketAnalyzer(client)
-
-# Channel
-#  client.subscribe('CHANNEL', channel_cb)
-
-  #client.enable('CLIENT')
 
   rospy.spin()
 

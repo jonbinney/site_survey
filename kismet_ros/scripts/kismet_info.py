@@ -7,6 +7,8 @@ import numpy
 import socket
 import threading
 
+from wifi_msgs.msg import AccessPoint
+
 class KismetClient(threading.Thread):
   def __init__(self, host='localhost', port=2501):
     threading.Thread.__init__(self)
@@ -187,10 +189,10 @@ class PacketAnalyzer:
     self.channel = 0
     self.ap_strength = {}
     client.subscribe('PACKET', self.packet_cb)
+    self._pub = rospy.Publisher('ap_detection', AccessPoint)
 
   def packet_cb(self, fields):
     if fields['channel'] != self.channel:
-      # TODO: print AP strength
       for bssid in self.ap_strength:
         print "BSSID %s strength %f (%f) on channel %s"%(bssid, 
             numpy.mean(self.ap_strength[bssid]),
@@ -207,6 +209,16 @@ class PacketAnalyzer:
         if not bssid in self.ap_strength:
           self.ap_strength[bssid] = []
         self.ap_strength[bssid].append(int(fields['signal_dbm']))
+        ap = AccessPoint()
+        ap.header.stamp = rospy.Time.now()
+        ap.header.frame_id = 'base_link'
+        ap.ssid = fields['ssid']
+        ap.bssid = fields['bssid']
+        ap.signal = int(fields['signal_dbm'])
+        ap.noise = int(fields['noise_dbm'])
+        ap.snr = 0
+        ap.channel = int(fields['channel'])
+        self._pub.publish(ap)
 
 
 def main():

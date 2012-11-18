@@ -1,0 +1,18 @@
+<package>
+  <description brief="survey_driver">
+
+     survey_driver
+
+  </description>
+  <author>Austin Hendrix</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/survey_driver</url>
+  <depend package="rospy"/>
+  <depend package="interactive_markers"/>
+  <depend package="map_server"/>
+  <depend package="geometry_msgs"/>
+
+</package>
+
+

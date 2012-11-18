@@ -1,0 +1,8 @@
+<launch>
+  <arg name="map" value="$(find survey_driver)/maps/willow.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" 
+    args="$(arg map)"/>
+  <node name="rviz" pkg="rviz" type="rviz" 
+    args="-d $(find survey_driver)/rviz.vcg"/>
+  <node name="survey_planner" pkg="survey_driver" type="survey_planner.py"/>
+</launch>

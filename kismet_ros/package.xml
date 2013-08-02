@@ -1,0 +1,22 @@
+<package>
+  <name>kismet_ros</name>
+  <description>kismet_ros</description>
+  <version>0.0.1</version>
+  <maintainer email="austin@austin.austin">Austin Hendrix</maintainer>
+  <license>BSD</license>
+
+  <url>http://ros.org/wiki/kismet_ros</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>wifi_msgs</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>wifi_msgs</run_depend>
+
+</package>
+
+

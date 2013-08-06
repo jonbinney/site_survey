@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+import sys
+import rosbag
+import matplotlib as mpl
+from matplotlib import pyplot as plt
+import numpy as np
+from scipy import linalg
+
+from wifi_vis.dataset import Dataset
+from wifi_vis.gaussian_process_model import GaussianProcessModel
+from wifi_vis import plot
+
+bag_filename = sys.argv[1]
+
+# Read dataset from bag
+dataset = Dataset()
+dataset.from_bag(bag_filename)
+
+# Process the dataset a bit
+bssid = dataset.bssid_dict.keys()[0]
+data = dataset.bssid_dict[bssid]
+ssid = data[0].ssid
+signal = np.array([d.signal for d in data], dtype=np.float)
+signal_min = signal.min()
+signal_max = signal.max()
+xytheta = np.array([d.get_xytheta() for d in data])
+
+# predict signal strength for a grid of points
+x_min, x_max = X[:,0].min(), X[:,0].max()
+y_min, y_max = X[:,1].min(), X[:,1].max()
+X_pred = []
+for x in np.linspace(x_min, x_max, 20):
+    for y in np.linspace(y_min, y_max, 20):
+        X_pred.append((x,y))
+X_pred = np.array(X_pred)
+Y_pred, sigma2_pred = gp.predict(X_pred, eval_MSE=True)
+        
+
+# Plot dataset
+fig = plt.figure()
+ax = fig.add_subplot(111)
+plot.plot_robot_path_xytheta(ax, xytheta)
+
+# Pretty up the plot
+plt.legend()
+#cbar = plt.colorbar(cax)
+#cbar.set_label('Signal strength (db)')
+plt.show()
+
+
